@@ -1,62 +1,52 @@
 #!/usr/bin/python3
 import sys
 
-def is_safe(board, row, col, n):
-    # Check if there's a queen in the same column
+def is_safe(board, row, col, N):
+    # Check if there is a queen in the same column
     for i in range(row):
-        if board[i][col] == 'Q':
+        if board[i][col] == 1:
             return False
-    
+
     # Check upper left diagonal
     for i, j in zip(range(row, -1, -1), range(col, -1, -1)):
-        if board[i][j] == 'Q':
+        if board[i][j] == 1:
             return False
-    
+
     # Check upper right diagonal
-    for i, j in zip(range(row, -1, -1), range(col, n)):
-        if board[i][j] == 'Q':
+    for i, j in zip(range(row, -1, -1), range(col, N)):
+        if board[i][j] == 1:
             return False
-            
+
     return True
 
-def solve_nqueens(n):
-    def backtrack(board, row):
-        if row == n:
-            solutions.append(["".join(row) for row in board])
-            return
-        for col in range(n):
-            if is_safe(board, row, col, n):
-                board[row][col] = 'Q'
-                backtrack(board, row + 1)
-                board[row][col] = '.'
-    
-    solutions = []
-    board = [['.' for _ in range(n)] for _ in range(n)]
-    backtrack(board, 0)
-    return solutions
-
-def print_solutions(solutions):
-    for solution in solutions:
-        for row in solution:
-            print(row)
+def solve_queens(board, row, N):
+    if row == N:
+        for r in board:
+            print(' '.join(map(str, r)))
         print()
+        return
 
-def main():
+    for col in range(N):
+        if is_safe(board, row, col, N):
+            board[row][col] = 1
+            solve_queens(board, row + 1, N)
+            board[row][col] = 0
+
+def nqueens(N):
+    if not N.isdigit():
+        print("N must be a number")
+        sys.exit(1)
+
+    N = int(N)
+    if N < 4:
+        print("N must be at least 4")
+        sys.exit(1)
+
+    board = [[0] * N for _ in range(N)]
+    solve_queens(board, 0, N)
+
+if __name__ == "__main__":
     if len(sys.argv) != 2:
         print("Usage: nqueens N")
         sys.exit(1)
-    
-    try:
-        n = int(sys.argv[1])
-        if n < 4:
-            print("N must be at least 4")
-            sys.exit(1)
-    except ValueError:
-        print("N must be a number")
-        sys.exit(1)
-    
-    solutions = solve_nqueens(n)
-    print_solutions(solutions)
-
-if __name__ == "__main__":
-    main()
+    nqueens(sys.argv[1])
